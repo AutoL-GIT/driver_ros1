@@ -1,0 +1,26 @@
+<!-- -*- mode: XML -*- -->
+<launch>
+  <arg name="manufacture_id" default="autol" />
+  <arg name="model_id" default="G32" />
+  <arg name="input_type" default="1" />
+  <arg name="pcap_path" default="/home/autol/010_khg/backup/pcap/2023-04-13-16-41-40_AutoL_Point_Data_5.pcap" />
+  <arg name="packet_per_frame" default="192" />
+  <arg name="framerate" default="20" />
+  
+  <arg name="slam" default="false" />
+  
+  <include file="$(find autol_driver)/launch/driver.launch">
+    	<arg name="manufacture_id" value="$(arg manufacture_id)"/>
+  	<arg name="model_id" value="$(arg model_id)"/>
+  	<arg name="input_type" value="$(arg input_type)"/>
+  	<arg name="pcap_path" value="$(arg pcap_path)"/>
+  	<arg name="packet_per_frame" value="$(arg packet_per_frame)"/>
+  	<arg name="framerate" value="$(arg framerate)"/>
+  </include>
+  
+  <include file="$(find autol_pointcloud)/launch/pointcloud.launch">
+    	<arg name="slam" value="$(arg slam)"/>  
+  </include>
+
+
+</launch>
