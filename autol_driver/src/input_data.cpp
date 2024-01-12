@@ -134,7 +134,7 @@ namespace autol_driver
 
             if (empty_)                 // no data in file?
             {
-                ROS_WARN("Error %d reading Velodyne packet: %s", res, pcap_geterr(pcap_));
+                ROS_WARN("Error %d reading packet: %s", res, pcap_geterr(pcap_));
                 return -1;
             }
 

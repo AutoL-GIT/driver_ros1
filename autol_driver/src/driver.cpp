@@ -46,8 +46,11 @@ namespace autol_driver
             }
         }
         else if (input_type_ == 2)
-        {               
-            input_data_[0].reset(new autol_driver::PcapInput(private_nh, UDP_PORT, FRAMERATE * PACKET_PER_SECOND, pcap_path));                  
+        {     
+	    for(int i = 0; i< 1; ++i)
+            {
+                input_data_[0].reset(new autol_driver::PcapInput(private_nh, PORT_LIST[0], FRAMERATE * PACKET_PER_SECOND, pcap_path));                  
+            }
         }    
         else if (input_type_ == 3)
         {  
@@ -61,15 +64,20 @@ namespace autol_driver
     
     void AutolDriver::StartRecvPacket()
     {                  
-    	for(int i = 0; i< LIDAR_COUNT; ++i)
-    	{
-	    thread_pool[i] = std::thread(&AutolDriver::RecvPacket, this, i);
-        }
+        if (input_type_ == 1)
+        {	
+            for(int i = 0; i< LIDAR_COUNT; ++i)
+	        thread_pool[i] = std::thread(&AutolDriver::RecvPacket, this, i);
         
-        for(int i = 0; i< LIDAR_COUNT; ++i)
-        {
+            for(int i = 0; i< LIDAR_COUNT; ++i)
 	     thread_pool[i].join();
-        }
+	}
+	else if (input_type_ == 2)
+	{
+	    thread_pool[0] = std::thread(&AutolDriver::RecvPacket, this, 0);
+	    thread_pool[0].join();
+	}
+	
     }
     
     void AutolDriver::RecvPacket(int lidar_index)
