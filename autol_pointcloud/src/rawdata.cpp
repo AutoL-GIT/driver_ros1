@@ -13,7 +13,7 @@ namespace autol_data
         DeSerialize(udp_packet, (char*)&(&packet)->data[0]);
         float cur_top_bottom_offset = 0;
 
-	uint16_t top_bottom_type = 0;
+	    uint16_t top_bottom_type = 0;
         if(udp_packet->header_.top_bottom_side_ == 0)
         {
             cur_top_bottom_offset = 0;
@@ -27,34 +27,22 @@ namespace autol_data
 
         for (size_t i = 0; i < DATABLOCK_SIZE; i++)
         {
-
             float azimuth = (float)udp_packet->data_block_[i].azimuth_ / 1000;
 
             for (size_t j = 0; j < CHANNEL_SIZE; j++)
             {
-                unsigned int distance = (unsigned int)udp_packet->data_block_[i].channel_data_[j].tof_ * 4;
+                float distance = (float)udp_packet->data_block_[i].channel_data_[j].tof_ / 256.0;
                 uint8_t intensity = udp_packet->data_block_[i].channel_data_[j].intensity_;
                 float vertical_angle = vertical_angle_arr_[j] + cur_top_bottom_offset;
                 float pos_x, pos_y, pos_z;                
                 float new_azimuth = 0;                             
                 
-        	if(j >= 0 && j<=3)
-                	new_azimuth = azimuth - 0.03324672;
-         	else if(j >= 4 && j<=7)
-                	new_azimuth = azimuth - 0.08926848;
-       	else if(j >= 8 && j<=11)
-                	new_azimuth = azimuth - 0.00523584;	
-        	else
-                	new_azimuth = azimuth - 0.0612576;
+                new_azimuth = azimuth;
 
-		uint16_t channel_num = (j * 2) + top_bottom_type;
+		        uint16_t channel_num = (j * 2) + top_bottom_type;
                 	
                 Get3DCoordinates(distance, vertical_angle, new_azimuth, 0, pos_x, pos_y, pos_z);
                 
-                pos_x /= 1000;
-                pos_y /= 1000;
-                pos_z /= 1000;
-               
                 if(is_slam_active == true)
                 {
                     int lidar_id = 0;
@@ -115,8 +103,6 @@ namespace autol_data
 		pos_x = rotated_x;
 		pos_y = rotated_y;
 		pos_z = rotated_z;
-	  
-	
     }
 
     void RawData::SetVerticalAngle(DeviceID device_id, int num_of_channel, float angle)
@@ -135,10 +121,12 @@ namespace autol_data
                     vertical_angle_arr_[i] = angle_start + (angle / num_of_channel) * i;
                     vertical_angle_arr_[i + 16] = angle_start + (angle / num_of_channel) * i + top_bottom_offset;
                 }
-            }
-            break;
-            default:
                 break;
+            }            
+            default:
+            {
+                break;
+            }
         }
     }
 
